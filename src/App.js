@@ -69,7 +69,7 @@ class App extends Component {
     mainTableColumns.map((column, columnIndex) => {
       column.map((cardColor, cardIndex) => {
         let draggable = (column.length - 1 === cardIndex) ? true : false
-      let cardDiv = <div id={cardColor} class="card card_main" draggable={draggable}><img src={'/cards/' + cardColor + '.png'} alt={cardColor}/></div>
+      let cardDiv = <div id={cardColor} class="card card_main" draggable={draggable}><img src={'cards/' + cardColor + '.png'} alt={cardColor}/></div>
         mainTableColumns[columnIndex][cardIndex] = cardDiv
       })
       mainTableColumns[columnIndex] = <div className="card_wrapper">{ mainTableColumns[columnIndex] }</div>
@@ -78,14 +78,14 @@ class App extends Component {
     return (
     <div className="container" onClick={this.handleClick}>
         <div className="header">
-          <img className="main_banner" src="/logo-bk.png" alt="logo" />
+          <img className="main_banner" src="logo-bk.png" alt="logo" />
           <div className="nav">
-            <img className="more_info icon" src="/btn-more.png" alt="more"/>
+            <img className="more_info icon" src="btn-more.png" alt="more"/>
             <div className="time_control">Time: 00 : 10</div>
-            <img className="back_tab icon" src="/btn-return.png" alt="return"/>
+            <img className="back_tab icon" src="btn-return.png" alt="return"/>
           </div>
           <div className="scoreboard">
-            <img className="bone_logo icon" src="/bone.png" alt="bone" />
+            <img className="bone_logo icon" src="bone.png" alt="bone" />
             <div className="score">Score : 100</div>
           </div>
         </div>
@@ -98,16 +98,16 @@ class App extends Component {
           </div>
           <div className="cards_area cards_area_sorted">
             <div className="card_wrapper">
-              <img src="/club-suit-w.png" alt="club"/>
+              <img src="club-suit-w.png" alt="club"/>
             </div>
             <div className="card_wrapper">
-              <img src="/diamond-suit-w.png" alt="diamond"/>
+              <img src="diamond-suit-w.png" alt="diamond"/>
             </div>
             <div className="card_wrapper">
-              <img src="/heart-suit-w.png" alt="heard"/>
+              <img src="heart-suit-w.png" alt="heard"/>
             </div>
             <div className="card_wrapper">
-              <img src="/spade-suit-w.png" alt="spade"/>
+              <img src="spade-suit-w.png" alt="spade"/>
             </div>
           </div>
           <div className="cards_area cards_area_main left">
@@ -122,12 +122,12 @@ class App extends Component {
           </div>
         </div>
         <div className="footer">
-          <img className="left_footer" src="/bg-left.png" alt="bg"/>
+          <img className="left_footer" src="bg-left.png" alt="bg"/>
           <div className="center_footer">
             <div className="footer_msg">QUICKLY</div>
-            <img src="/bg-JQK.png" alt="bg"/>
+            <img src="bg-JQK.png" alt="bg"/>
           </div>
-          <img className="right_footer" src="/bg-right.png" alt="bg" />
+          <img className="right_footer" src="bg-right.png" alt="bg" />
         </div>
     </div>
     )
