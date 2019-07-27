@@ -127,7 +127,7 @@ class App extends Component {
             <div className="footer_msg">QUICKLY</div>
             <img src="bg-JQK.png" alt="bg"/>
           </div>
-          <img className="right_footer" src="bg-right.png" alt="bg" />
+          <img className="right_footer" src="./bg-right.png" alt="bg" />
         </div>
     </div>
     )
