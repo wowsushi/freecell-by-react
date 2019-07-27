@@ -1,4 +1,4 @@
 output: {
-	path: "/public/freecell-by-react/",
+	path: "/https://wowsushi.github.io/freecell-by-react/",
 	publicPath: "/freecell-by-react/"
 }
