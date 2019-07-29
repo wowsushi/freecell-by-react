@@ -22,6 +22,13 @@ img {
   height: auto;
 }
 
+[draggable="true"] {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
 .icon {
   width: 40px;
   height: 40px;
@@ -104,12 +111,12 @@ img {
 
 .cards_area_sorted .card_wrapper {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.cards_area_sorted img {
+.cards_area_sorted .icon {
+  position: absolute;
+  top: calc(50% - 1.5rem);
+  left: calc(50% - 1.5rem);
   width: 3rem;
   height: 3rem;
 }
@@ -159,4 +166,11 @@ img {
 .card_main {
   top: 107px;
   margin-top: -107px;
+}
+
+.card_temp,
+.card_sorted {
+  position: absolute;
+  top: 0;
+  margin-top: 0;
 }
