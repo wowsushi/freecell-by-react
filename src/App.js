@@ -6,13 +6,14 @@ class App extends Component {
     super(props)
     this.state= {
       mainTableColumns: [ [], [], [], [], [], [], [], [] ],
-      tempDecks: [ ['heart_10', 'heart_9'], [], [], [] ],
+      tempDecks: [ [], [], [], [] ],
       sortedDecks: [ [], [], [], [] ],
       draggedArea: '',
       draggedColIndex: 0,
       droppedArea: '',
       droppedColIndex: 0,
-      count: 0
+      score: 0,
+      clock: 0
     }
     this.handleClick = this.handleClick.bind(this)
     this.handleDragStart = this.handleDragStart.bind(this)
@@ -47,7 +48,7 @@ class App extends Component {
     //pick one card in random from original cards
     while (originalCards.length) {
       for (let i=0; i<mainCardArea.length; i++) {
-        const color = {
+        const suit = {
           0: 'club',
           1: 'diamond',
           2: 'heart',
@@ -56,7 +57,7 @@ class App extends Component {
         if (originalCards.length) {
          let range = originalCards.length
          let pickedCard = originalCards.splice(this.getRandomNumber(range), 1)
-         pickedCard = `${ color[ Math.floor(pickedCard / 13) ] }_${ (pickedCard % 13) + 1 }`
+         pickedCard = `${ suit[ Math.floor(pickedCard / 13) ] }_${ (pickedCard % 13) + 1 }`
          mainCardArea[i].push(pickedCard)
         }
       }
@@ -66,20 +67,29 @@ class App extends Component {
 
   revelCardDecks(cardDecks, status) {
     const cardList = JSON.parse(JSON.stringify(cardDecks))
+    let suits =[]
+    if (status === 'sorted') {
+      suits = ['club', 'diamond', 'heart', 'spade']
+      suits.map((suit, index) => {
+        console.log(suit)
+         suits[index] =  <img src={`${suit}-suit.png`} className="icon" alt="club"/>
+      })
+    }
 
     cardList.map((column, columnIndex) => {
       column.map((cardColor, cardIndex) => {
         let draggable = (column.length - 1 === cardIndex) ? true : false
+        if (status === 'sorted') draggable = false
       let cardDiv =
       <div
         id={cardColor}
         key={cardColor}
         className={'card card_' + status}
-        draggable={draggable}
         data-columnIndex={columnIndex}>
           <img
             src={'cards/' + cardColor + '.png'}
             alt={cardColor}
+            draggable={draggable}
           />
       </div>
         return cardList[columnIndex][cardIndex] = cardDiv
@@ -89,10 +99,11 @@ class App extends Component {
           className="card_wrapper"
           // onDrop={this.handleDrop.bind(this, status)}
           onDragStart={this.handleDragStart(status, columnIndex)}
-          onDrop={this.handleDrop(status, columnIndex)}
-          onDragEnter={this.handleDragEnter}
+          onDrop={this.handleDrop}
+          onDragEnter={this.handleDragEnter(status, columnIndex)}
           onDragOver={this.handleDragOver}
           >
+          { suits[columnIndex]  }
           { cardList[columnIndex] }
         </div>
     })
@@ -100,7 +111,55 @@ class App extends Component {
   }
 
   // drag & drop check
-  draggableCheck(cardList) {
+  draggableCheck() {
+    const { mainTableColumns, tempDecks, sortedDecks } = this.state
+
+    // switch () {
+    //   case 'temp':
+    //     return tempDecks.length
+    //     break
+    //   case 'sorted':
+    //     return false
+    //     break
+    //   case 'main':
+    //     return
+    // }
+  }
+
+  droppableCheck(id) {
+    const { mainTableColumns, tempDecks, sortedDecks, droppedArea, droppedColIndex } = this.state
+    const [ droppedSuit, droppedNum ] = id.split('_')
+    const suit = {
+      0: 'club',
+      1: 'diamond',
+      2: 'heart',
+      3: 'spade'
+    }
+
+    switch (droppedArea) {
+      case 'temp':
+        return (tempDecks[droppedColIndex].length) ? false : true
+        break
+      case 'sorted':
+        return (suit[droppedColIndex] === droppedSuit && sortedDecks[droppedColIndex].length + 1 === +droppedNum)
+        break
+      case 'main':
+        const lastCard = mainTableColumns[droppedColIndex].slice(-1)[0]
+        const [lastCardSuit, lastCardNum ] = lastCard.split('_')
+
+        if (lastCardSuit === 'club' || lastCardSuit === 'spade') {
+          return (
+             ['diamond', 'heart'].includes(droppedSuit)
+          &&  +droppedNum === +lastCardNum - 1
+          )
+        } else {
+          return (
+            ['club', 'spade'].includes(droppedSuit)
+          && +droppedNum === +lastCardNum - 1
+          )
+        }
+        break
+    }
 
   }
 
@@ -116,9 +175,9 @@ class App extends Component {
   //   }
   // }
 
-  handleDrop = (status, columnIndex) => e => {
+  handleDrop = e => {
     console.log('drop start')
-    const { mainTableColumns, tempDecks, sortedDecks, draggedArea, draggedColIndex, droppedArea } = this.state
+    const { mainTableColumns, tempDecks, sortedDecks, draggedArea, draggedColIndex, droppedArea, droppedColIndex, score } = this.state
 
     let newMainTableColumns =JSON.parse(JSON.stringify(mainTableColumns))
     let newTempDecks =JSON.parse(JSON.stringify(tempDecks))
@@ -127,47 +186,56 @@ class App extends Component {
     this.cancelDefault(e)
     let id = e.dataTransfer.getData('text/plain')
 
-    //drop card to dropped area
-    switch(status) {
-      case 'temp':
-        newTempDecks[columnIndex].push(id)
-        break;
-      case 'sorted':
-        newSortedDecks[columnIndex].push(id)
-        break;
-      case 'main':
-        console.log(id)
-        newMainTableColumns[columnIndex].push(id)
-        break;
-      default:
-        console.log('default')
-    }
+    if (this.droppableCheck(id)) {
+      //drop card to dropped area
+      switch(droppedArea) {
+        case 'temp':
+          newTempDecks[droppedColIndex].push(id)
+          break;
+        case 'sorted':
+          newSortedDecks[droppedColIndex].push(id)
+          this.setState({ score: score + 100 })
+          break;
+        case 'main':
+          newMainTableColumns[droppedColIndex].push(id)
+          break;
+        default:
+          console.log('default')
+      }
 
-    //remove from dragged area
-    switch(draggedArea) {
-      case 'temp':
-        newTempDecks[draggedColIndex].pop()
+      //remove from dragged area
+      switch(draggedArea) {
+        case 'temp':
+          newTempDecks[draggedColIndex].pop()
+          break;
+        case 'sorted':
+          break;
+        case 'main':
+          newMainTableColumns[draggedColIndex].pop()
         break;
-      case 'sorted':
-        break;
-      case 'main':
-        newMainTableColumns[draggedColIndex].pop()
-      break;
-      default:
-        console.log('default')
+        default:
+          console.log('default')
+      }
+
     }
 
     this.setState({
-      droppedArea: status,
-      droppedColIndex: columnIndex,
+      draggedArea: '',
+      draggedColIndex: 0,
+      droppedArea: '',
+      droppedColIndex: 0,
       mainTableColumns: newMainTableColumns,
       tempDecks: newTempDecks,
       sortedDecks: newSortedDecks
     })
   }
 
-  handleDragEnter(e) {
+  handleDragEnter = (status, columnIndex) => e => {
     this.cancelDefault(e)
+    this.setState({droppedArea: status, droppedColIndex: columnIndex})
+    console.log(e)
+    let id = e.dataTransfer.getData('text/plain')
+    console.log(id)
   }
 
   handleDragOver(e) {
@@ -203,7 +271,7 @@ class App extends Component {
           </div>
           <div className="scoreboard">
             <img className="bone_logo icon" src="bone.png" alt="bone" />
-            <div className="score">Score : 100</div>
+            <div className="score">Score : {this.state.score}</div>
           </div>
         </div>
         <div className="game_table">
