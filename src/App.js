@@ -15,7 +15,6 @@ class App extends Component {
       score: 0,
       clock: 0
     }
-    this.handleClick = this.handleClick.bind(this)
     this.handleDragStart = this.handleDragStart.bind(this)
     // this.handleDrop = this.handleDrop.bind(this)
     this.handleDragEnter = this.handleDragEnter.bind(this)
@@ -24,11 +23,11 @@ class App extends Component {
 
   componentDidMount() {
     this.shuffleCards()
+    this.clock()
   }
 
-  componentDidUpdate(prevProps) {
-    console.log(this.state.count)
-    console.log(this.state.mainTableColumns)
+  componentWillUnmount() {
+    clearInterval(this.interval)
   }
 
   //init game
@@ -71,8 +70,7 @@ class App extends Component {
     if (status === 'sorted') {
       suits = ['club', 'diamond', 'heart', 'spade']
       suits.map((suit, index) => {
-        console.log(suit)
-         suits[index] =  <img src={`${suit}-suit.png`} className="icon" alt="club"/>
+         suits[index] =  <img src={`${suit}-suit.png`} className="icon" alt={ suit }/>
       })
     }
 
@@ -110,22 +108,7 @@ class App extends Component {
     return cardList
   }
 
-  // drag & drop check
-  draggableCheck() {
-    const { mainTableColumns, tempDecks, sortedDecks } = this.state
-
-    // switch () {
-    //   case 'temp':
-    //     return tempDecks.length
-    //     break
-    //   case 'sorted':
-    //     return false
-    //     break
-    //   case 'main':
-    //     return
-    // }
-  }
-
+  // drag & drop event
   droppableCheck(id) {
     const { mainTableColumns, tempDecks, sortedDecks, droppedArea, droppedColIndex } = this.state
     const [ droppedSuit, droppedNum ] = id.split('_')
@@ -145,6 +128,8 @@ class App extends Component {
         break
       case 'main':
         const lastCard = mainTableColumns[droppedColIndex].slice(-1)[0]
+        if (!lastCard) return true
+
         const [lastCardSuit, lastCardNum ] = lastCard.split('_')
 
         if (lastCardSuit === 'club' || lastCardSuit === 'spade') {
@@ -165,15 +150,10 @@ class App extends Component {
 
   handleDragStart = (status, columnIndex) => e => {
     console.log('start')
+    let id = e.target.parentNode.id
     e.dataTransfer.setData('text/plain', e.target.parentNode.id)
     this.setState({draggedArea: status, draggedColIndex: columnIndex})
   }
-
-  // handleDrop = function (status) {
-  //   return e => {
-  //     .....
-  //   }
-  // }
 
   handleDrop = e => {
     console.log('drop start')
@@ -194,7 +174,6 @@ class App extends Component {
           break;
         case 'sorted':
           newSortedDecks[droppedColIndex].push(id)
-          this.setState({ score: score + 100 })
           break;
         case 'main':
           newMainTableColumns[droppedColIndex].push(id)
@@ -216,7 +195,6 @@ class App extends Component {
         default:
           console.log('default')
       }
-
     }
 
     this.setState({
@@ -228,14 +206,15 @@ class App extends Component {
       tempDecks: newTempDecks,
       sortedDecks: newSortedDecks
     })
+    this.calculateScore(newSortedDecks)
   }
 
   handleDragEnter = (status, columnIndex) => e => {
     this.cancelDefault(e)
     this.setState({droppedArea: status, droppedColIndex: columnIndex})
-    console.log(e)
+
     let id = e.dataTransfer.getData('text/plain')
-    console.log(id)
+
   }
 
   handleDragOver(e) {
@@ -248,11 +227,21 @@ class App extends Component {
     return false
   }
 
+// clock
+  clock() {
+    this.interval = setInterval(() => {
+      this.setState({ clock: this.state.clock + 1 })
+    }, 1000)
+  }
 
-
-  handleClick() {
-    this.setState({count: this.state.count + 1})
-
+  calculateScore(sortedDecks) {
+    let totalCards = 0
+    sortedDecks.map((column, index) => {
+      console.log(column)
+      totalCards = totalCards + column.length
+    })
+    this.setState({score: totalCards * 100})
+    console.log(totalCards)
   }
 
   render() {
@@ -266,7 +255,9 @@ class App extends Component {
           <img className="main_banner" src="logo-bk.png" alt="logo" />
           <div className="nav">
             <img className="more_info icon" src="btn-more.png" alt="more"/>
-            <div className="time_control">Time: 00 : 10</div>
+            <div className="time_control">
+              Time: {(Math.floor(this.state.clock / 60)).toString().padStart(2, '0') } : {(this.state.clock % 60).toString().padStart(2, '0')}
+            </div>
             <img className="back_tab icon" src="btn-return.png" alt="return"/>
           </div>
           <div className="scoreboard">
@@ -280,18 +271,6 @@ class App extends Component {
           </div>
           <div className="cards_area cards_area_sorted">
             {sortedDecks}
-            {/* <div className="card_wrapper">
-              <img src="club-suit-w.png" alt="club"/>
-            </div>
-            <div className="card_wrapper">
-              <img src="diamond-suit-w.png" alt="diamond"/>
-            </div>
-            <div className="card_wrapper">
-              <img src="heart-suit-w.png" alt="heard"/>
-            </div>
-            <div className="card_wrapper">
-              <img src="spade-suit-w.png" alt="spade"/>
-            </div> */}
           </div>
           <div className="cards_area cards_area_main left">
             {mainTableColumns.map((column, index) => {
