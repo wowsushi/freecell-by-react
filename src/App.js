@@ -1,13 +1,42 @@
 import React, { Component } from 'react';
 import './App.css';
 
+function InstructionModal (props){
+    return (
+      <div class="content">
+        <button className="btn_cancel">
+          <i className="material-icons"  onClick={props.closeModal}>cancel_presentation</i>
+        </button>
+        <img src="./how_to_play.png" alt="How to play?"/>
+        <div className="paragraph">
+          <p>Freecell is a one-deck solitaire card game. All cards are dealt into 8 tableau piles. Four Cells (in the top left corner of the screen) and four foundation piles (top right hand corner) are placed above the tableau piles.</p>
+          <p>The object of the game is to build up all cards on foundations from Ace to King by following suit. You win when all 52 cards are moved there, 13 to a pile.</p>
+          <p>Top cards of tableau piles and cards from Cells are available to play. You can build tableau piles down by alternating color. Only one card at a time can be moved.</p>
+          <p>The top card of any tableau pile can also be moved to any Cell. Each Cell (or Reserve space) may contain only one card. Cards in the cells can be moved to the foundation piles or back to the tableau piles, if possible.</p>
+          <p>The rules state that you can move only one card at a time, but you can move group of cards in the proper sequence if you have enough free (empty) Cells and/or tableau piles.</p>
+        </div>
+      </div>
+    )
+}
+
+function InfoModal (props) {
+  return (
+    <div className="content">
+        <img src="./word_new_game.png" alt="New game"/>
+        <button>Quit and start a new game</button>
+        <button>Restart this game</button>
+        <button>Keep playing</button>
+    </div>
+  )
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
     this.state= {
-      mainTableColumns: [ [], [], [], [], [], [], [], [] ],
-      tempDecks: [ [], [], [], [] ],
-      sortedDecks: [ [], [], [], [] ],
+      mainTableColumns: [[ [], [], [], [], [], [], [], [] ]],
+      tempDecks: [[ [], [], [], [] ]],
+      sortedDecks: [[ [], [], [], [] ]],
       draggedArea: '',
       draggedColIndex: 0,
       droppedArea: '',
@@ -23,7 +52,9 @@ class App extends Component {
 
   componentDidMount() {
     this.shuffleCards()
-    this.clock()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
   }
 
   componentWillUnmount() {
@@ -61,7 +92,7 @@ class App extends Component {
         }
       }
     }
-    this.setState({mainTableColumns: mainCardArea })
+    this.setState({mainTableColumns: [mainCardArea] })
   }
 
   revelCardDecks(cardDecks, status) {
@@ -110,7 +141,11 @@ class App extends Component {
 
   // drag & drop event
   droppableCheck(id) {
-    const { mainTableColumns, tempDecks, sortedDecks, droppedArea, droppedColIndex } = this.state
+    const { droppedArea, droppedColIndex } = this.state
+    const mainTableColumns = this.state.mainTableColumns[this.state.mainTableColumns.length-1]
+    const tempDecks = this.state.tempDecks[this.state.tempDecks.length-1]
+    const sortedDecks = this.state.sortedDecks[this.state.sortedDecks.length-1]
+
     const [ droppedSuit, droppedNum ] = id.split('_')
     const suit = {
       0: 'club',
@@ -163,6 +198,16 @@ class App extends Component {
     let newTempDecks =JSON.parse(JSON.stringify(tempDecks))
     let newSortedDecks = JSON.parse(JSON.stringify(sortedDecks))
 
+    newMainTableColumns = newMainTableColumns[newMainTableColumns.length-1]
+    newTempDecks = newTempDecks[newTempDecks.length-1]
+    newSortedDecks = newSortedDecks[newSortedDecks.length-1]
+
+    // let newMainTableColumns = mainTableColumns[mainTableColumns.length-1]
+    // let newTempDecks = tempDecks[tempDecks.length-1]
+    // let newSortedDecks = sortedDecks[sortedDecks.length-1]
+    // console.log('drop start')
+    // console.log(newMainTableColumns,newTempDecks, newSortedDecks)
+
     this.cancelDefault(e)
     let id = e.dataTransfer.getData('text/plain')
 
@@ -196,15 +241,20 @@ class App extends Component {
           console.log('default')
       }
     }
+    mainTableColumns.push(newMainTableColumns)
+    tempDecks.push(newTempDecks)
+    sortedDecks.push(newSortedDecks)
+    console.log('push check')
+    console.log(mainTableColumns)
 
     this.setState({
       draggedArea: '',
       draggedColIndex: 0,
       droppedArea: '',
       droppedColIndex: 0,
-      mainTableColumns: newMainTableColumns,
-      tempDecks: newTempDecks,
-      sortedDecks: newSortedDecks
+      mainTableColumns: mainTableColumns,
+      tempDecks: tempDecks,
+      sortedDecks: sortedDecks
     })
     this.calculateScore(newSortedDecks)
   }
@@ -237,28 +287,58 @@ class App extends Component {
   calculateScore(sortedDecks) {
     let totalCards = 0
     sortedDecks.map((column, index) => {
-      console.log(column)
       totalCards = totalCards + column.length
     })
     this.setState({score: totalCards * 100})
-    console.log(totalCards)
+  }
+
+  undo = () => e => {
+    const { mainTableColumns, tempDecks, sortedDecks } = this.state
+    console.log('undo start')
+
+    if (mainTableColumns.length > 1) {
+      mainTableColumns.pop()
+      tempDecks.pop()
+      sortedDecks.pop()
+    } else {
+      alert('這已經是第一步囉')
+    }
+
+    this.setState({
+      mainTableColumns: mainTableColumns,
+      tempDecks: tempDecks,
+      sortedDecks: sortedDecks
+    })
+    this.calculateScore(sortedDecks[sortedDecks.length-1])
+  }
+
+  closeModal = () => e => {
+    const modal = document.querySelector('.modal')
+    modal.style.display = 'none'
+    this.clock()
+  }
+
+  openModal = () => e => {
+    const modal = document.querySelector('.modal')
+    modal.style.display = 'block'
+    clearInterval(this.interval)
   }
 
   render() {
-    const mainTableColumns = this.revelCardDecks(this.state.mainTableColumns, 'main')
-    const tempDecks = this.revelCardDecks(this.state.tempDecks, 'temp')
-    const sortedDecks = this.revelCardDecks(this.state.sortedDecks, 'sorted')
+    const mainTableColumns = this.revelCardDecks(this.state.mainTableColumns[this.state.mainTableColumns.length-1], 'main')
+    const tempDecks = this.revelCardDecks(this.state.tempDecks[this.state.tempDecks.length-1], 'temp')
+    const sortedDecks = this.revelCardDecks(this.state.sortedDecks[this.state.sortedDecks.length-1], 'sorted')
 
     return (
     <div className="container" >
         <div className="header">
           <img className="main_banner" src="logo-bk.png" alt="logo" />
           <div className="nav">
-            <img className="more_info icon" src="btn-more.png" alt="more"/>
+            <img className="more_info icon" src="btn-more.png" alt="more" onClick={this.openModal()}/>
             <div className="time_control">
               Time: {(Math.floor(this.state.clock / 60)).toString().padStart(2, '0') } : {(this.state.clock % 60).toString().padStart(2, '0')}
             </div>
-            <img className="back_tab icon" src="btn-return.png" alt="return"/>
+            <img className="back_tab icon" src="btn-return.png" alt="return" onClick={this.undo()}/>
           </div>
           <div className="scoreboard">
             <img className="bone_logo icon" src="bone.png" alt="bone" />
@@ -290,6 +370,11 @@ class App extends Component {
             <img src="bg-JQK.png" alt="bg"/>
           </div>
           <img className="right_footer" src="./bg-right.png" alt="bg" />
+        </div>
+        <div className="modal">
+          <div className="background" onClick={this.closeModal()}></div>
+            {/* <InstructionModal closeModal={this.closeModal()}/> */}
+            <InfoModal />
         </div>
     </div>
     )

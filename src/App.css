@@ -22,6 +22,13 @@ img {
   height: auto;
 }
 
+button {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
 [draggable="true"] {
   user-select: none;
   -moz-user-select: none;
@@ -178,4 +185,89 @@ img {
 
 .dragging {
   opacity: 0;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  opacity: .5;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track {
+    width: 1rem;
+    border: none;
+    background:transparent;
+}
+
+
+::-webkit-scrollbar-thumb {
+    background-color: #2F2417;
+    border: 4px black solid;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: black;
+}
+
+.modal .content {
+  position: fixed;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  top: 20vh;
+  left: 26vw;
+  width: 52vw;
+  height: 56vh;
+  padding: 1rem 2rem;
+  background: #453122;
+  border: 10px white solid;
+  border-radius: 10px;
+  outline: 4px #2F2417 solid;
+  outline-offset: -10px;
+}
+
+.modal .content > * {
+  width: 100%;
+}
+
+.modal .content i {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1rem;
+  font-size: 2.5rem;
+}
+
+.modal .content button {
+  width: 70%;
+  border: 3px #000000 solid;
+  border-radius: 30px;
+  background: #2F2417;
+  padding: 1rem 3rem;
+  margin: .6rem 0;
+}
+
+.modal img {
+  width: 60%;
+  margin: 1rem 0;
+}
+
+.modal .paragraph {
+  width: 100%;
+  height: 80%;
+  overflow-y: scroll;
+}
+
+.modal p {
+  margin: 1rem 0;
+  font-size: .75rem;
+  line-height: 1.5rem;
 }
