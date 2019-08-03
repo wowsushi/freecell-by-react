@@ -3,12 +3,12 @@ import './App.css';
 
 function InstructionModal (props){
     return (
-      <div class="content">
+      <div className="content">
         <button className="btn_cancel">
           <i className="material-icons"  onClick={props.closeModal}>cancel_presentation</i>
         </button>
-        <img src="./how_to_play.png" alt="How to play?"/>
-        <div className="paragraph">
+        <img src="./how_to_play.png" alt="How to play?" className="img_instruction"/>
+        <div className="paragraph paragraph_instruction">
           <p>Freecell is a one-deck solitaire card game. All cards are dealt into 8 tableau piles. Four Cells (in the top left corner of the screen) and four foundation piles (top right hand corner) are placed above the tableau piles.</p>
           <p>The object of the game is to build up all cards on foundations from Ace to King by following suit. You win when all 52 cards are moved there, 13 to a pile.</p>
           <p>Top cards of tableau piles and cards from Cells are available to play. You can build tableau piles down by alternating color. Only one card at a time can be moved.</p>
@@ -22,10 +22,25 @@ function InstructionModal (props){
 function InfoModal (props) {
   return (
     <div className="content">
-        <img src="./word_new_game.png" alt="New game"/>
-        <button>Quit and start a new game</button>
-        <button>Restart this game</button>
-        <button>Keep playing</button>
+        <img src="./word_new_game.png" alt="New game" className="img_info"/>
+        <div className="paragraph paragraph_info">
+          <button onClick={props.newGame}>Quit and start a new game</button>
+          <button onClick={props.restart}>Restart this game</button>
+          <button onClick={props.closeModal}>Keep playing</button>
+        </div>
+    </div>
+  )
+}
+
+function WinModal (props) {
+  return (
+    <div className="content">
+        <img src="./congratulations.svg" alt="win" className="img_win"/>
+        <div className="paragraph paragraph_win">
+          <button onClick={props.restart}>Restart</button>
+          <button onClick={props.newGame}>New Game</button>
+          <img className="win_pic" src="./congratulations_pic.png" alt="win_pic"/>
+        </div>
     </div>
   )
 }
@@ -42,10 +57,10 @@ class App extends Component {
       droppedArea: '',
       droppedColIndex: 0,
       score: 0,
-      clock: 0
+      clock: 0,
+      modal: <InstructionModal closeModal={this.closeModal}/>
     }
     this.handleDragStart = this.handleDragStart.bind(this)
-    // this.handleDrop = this.handleDrop.bind(this)
     this.handleDragEnter = this.handleDragEnter.bind(this)
     this.handleDragOver = this.handleDragOver.bind(this)
   }
@@ -55,6 +70,7 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+
   }
 
   componentWillUnmount() {
@@ -102,6 +118,7 @@ class App extends Component {
       suits = ['club', 'diamond', 'heart', 'spade']
       suits.map((suit, index) => {
          suits[index] =  <img src={`${suit}-suit.png`} className="icon" alt={ suit }/>
+         return null
       })
     }
 
@@ -114,7 +131,7 @@ class App extends Component {
         id={cardColor}
         key={cardColor}
         className={'card card_' + status}
-        data-columnIndex={columnIndex}>
+       >
           <img
             src={'cards/' + cardColor + '.png'}
             alt={cardColor}
@@ -131,10 +148,12 @@ class App extends Component {
           onDrop={this.handleDrop}
           onDragEnter={this.handleDragEnter(status, columnIndex)}
           onDragOver={this.handleDragOver}
+          key={columnIndex}
           >
           { suits[columnIndex]  }
           { cardList[columnIndex] }
         </div>
+      return null
     })
     return cardList
   }
@@ -157,13 +176,14 @@ class App extends Component {
     switch (droppedArea) {
       case 'temp':
         return (tempDecks[droppedColIndex].length) ? false : true
-        break
       case 'sorted':
         return (suit[droppedColIndex] === droppedSuit && sortedDecks[droppedColIndex].length + 1 === +droppedNum)
-        break
       case 'main':
         const lastCard = mainTableColumns[droppedColIndex].slice(-1)[0]
         if (!lastCard) return true
+        break
+      default:
+        console.log('error')
 
         const [lastCardSuit, lastCardNum ] = lastCard.split('_')
 
@@ -178,21 +198,18 @@ class App extends Component {
           && +droppedNum === +lastCardNum - 1
           )
         }
-        break
     }
 
   }
 
   handleDragStart = (status, columnIndex) => e => {
-    console.log('start')
     let id = e.target.parentNode.id
-    e.dataTransfer.setData('text/plain', e.target.parentNode.id)
+    e.dataTransfer.setData('text/plain', id)
     this.setState({draggedArea: status, draggedColIndex: columnIndex})
   }
 
   handleDrop = e => {
-    console.log('drop start')
-    const { mainTableColumns, tempDecks, sortedDecks, draggedArea, draggedColIndex, droppedArea, droppedColIndex, score } = this.state
+    const { mainTableColumns, tempDecks, sortedDecks, draggedArea, draggedColIndex, droppedArea, droppedColIndex } = this.state
 
     let newMainTableColumns =JSON.parse(JSON.stringify(mainTableColumns))
     let newTempDecks =JSON.parse(JSON.stringify(tempDecks))
@@ -201,12 +218,6 @@ class App extends Component {
     newMainTableColumns = newMainTableColumns[newMainTableColumns.length-1]
     newTempDecks = newTempDecks[newTempDecks.length-1]
     newSortedDecks = newSortedDecks[newSortedDecks.length-1]
-
-    // let newMainTableColumns = mainTableColumns[mainTableColumns.length-1]
-    // let newTempDecks = tempDecks[tempDecks.length-1]
-    // let newSortedDecks = sortedDecks[sortedDecks.length-1]
-    // console.log('drop start')
-    // console.log(newMainTableColumns,newTempDecks, newSortedDecks)
 
     this.cancelDefault(e)
     let id = e.dataTransfer.getData('text/plain')
@@ -244,8 +255,6 @@ class App extends Component {
     mainTableColumns.push(newMainTableColumns)
     tempDecks.push(newTempDecks)
     sortedDecks.push(newSortedDecks)
-    console.log('push check')
-    console.log(mainTableColumns)
 
     this.setState({
       draggedArea: '',
@@ -262,9 +271,6 @@ class App extends Component {
   handleDragEnter = (status, columnIndex) => e => {
     this.cancelDefault(e)
     this.setState({droppedArea: status, droppedColIndex: columnIndex})
-
-    let id = e.dataTransfer.getData('text/plain')
-
   }
 
   handleDragOver(e) {
@@ -287,14 +293,22 @@ class App extends Component {
   calculateScore(sortedDecks) {
     let totalCards = 0
     sortedDecks.map((column, index) => {
-      totalCards = totalCards + column.length
+      totalCards += column.length
+      return null
     })
     this.setState({score: totalCards * 100})
+
+    if (totalCards === 52) {
+      this.setState({modal: <WinModal newGame={this.newGame} restart={this.restart} closeModal={this.closeModal} />})
+
+      const modal = document.querySelector('.modal')
+      modal.style.display = 'block'
+      clearInterval(this.interval)
+    }
   }
 
   undo = () => e => {
     const { mainTableColumns, tempDecks, sortedDecks } = this.state
-    console.log('undo start')
 
     if (mainTableColumns.length > 1) {
       mainTableColumns.pop()
@@ -312,13 +326,50 @@ class App extends Component {
     this.calculateScore(sortedDecks[sortedDecks.length-1])
   }
 
-  closeModal = () => e => {
+  newGame = () => {
+    this.closeModal()
+    this.shuffleCards()
+    this.setState({
+      // mainTableColumns: [[ [], [], [], [], [], [], [], [] ]],
+      tempDecks: [[ [], [], [], [] ]],
+      sortedDecks: [[ [], [], [], [] ]],
+      score: 0,
+      clock: 0
+    })
+  }
+
+  restart = () => {
+    this.closeModal()
+    this.setState({
+      mainTableColumns: [this.state.mainTableColumns[0]],
+      tempDecks: [[ [], [], [], [] ]],
+      sortedDecks: [[ [], [], [], [] ]],
+      score: 0,
+      clock: 0
+    })
+  }
+
+  closeModal = () => {
     const modal = document.querySelector('.modal')
     modal.style.display = 'none'
     this.clock()
   }
 
-  openModal = () => e => {
+  openModal = (modalName) => e => {
+    switch (modalName) {
+      case 'instruction':
+        this.setState({modal: <InstructionModal />})
+        break
+      case 'info':
+        this.setState({modal: <InfoModal newGame={this.newGame} restart={this.restart} closeModal={this.closeModal} />})
+        break
+      case 'win':
+        this.setState({modal: <WinModal newGame={this.newGame} closeModal={this.closeModal} />})
+        break
+      default:
+        console.log('error')
+    }
+
     const modal = document.querySelector('.modal')
     modal.style.display = 'block'
     clearInterval(this.interval)
@@ -334,7 +385,7 @@ class App extends Component {
         <div className="header">
           <img className="main_banner" src="logo-bk.png" alt="logo" />
           <div className="nav">
-            <img className="more_info icon" src="btn-more.png" alt="more" onClick={this.openModal()}/>
+            <img className="more_info icon" src="btn-more.png" alt="more" onClick={this.openModal('info')}/>
             <div className="time_control">
               Time: {(Math.floor(this.state.clock / 60)).toString().padStart(2, '0') } : {(this.state.clock % 60).toString().padStart(2, '0')}
             </div>
@@ -355,11 +406,13 @@ class App extends Component {
           <div className="cards_area cards_area_main left">
             {mainTableColumns.map((column, index) => {
               if (index < 4) return column
+              return null
             })}
           </div>
           <div className="cards_area cards_area_main right">
             {mainTableColumns.map((column, index) => {
               if (index >= 4) return column
+              return null
             })}
           </div>
         </div>
@@ -372,9 +425,8 @@ class App extends Component {
           <img className="right_footer" src="./bg-right.png" alt="bg" />
         </div>
         <div className="modal">
-          <div className="background" onClick={this.closeModal()}></div>
-            {/* <InstructionModal closeModal={this.closeModal()}/> */}
-            <InfoModal />
+          <div className="background" onClick={this.closeModal}></div>
+            {this.state.modal}
         </div>
     </div>
     )
