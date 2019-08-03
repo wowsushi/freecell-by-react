@@ -181,9 +181,6 @@ class App extends Component {
       case 'main':
         const lastCard = mainTableColumns[droppedColIndex].slice(-1)[0]
         if (!lastCard) return true
-        break
-      default:
-        console.log('error')
 
         const [lastCardSuit, lastCardNum ] = lastCard.split('_')
 
@@ -198,6 +195,8 @@ class App extends Component {
           && +droppedNum === +lastCardNum - 1
           )
         }
+      default:
+        console.log('error')
     }
 
   }
@@ -221,7 +220,6 @@ class App extends Component {
 
     this.cancelDefault(e)
     let id = e.dataTransfer.getData('text/plain')
-
     if (this.droppableCheck(id)) {
       //drop card to dropped area
       switch(droppedArea) {

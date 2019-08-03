@@ -88,7 +88,7 @@ button {
   grid-template-areas:
     "temp . sorted"
     "main_left . main_right";
-  grid-template-columns: 544px 6% 544px;
+  grid-template-columns: 544px auto 544px;
   grid-template-rows: 145px auto;
   margin-top: 1rem;
   height: 70vh;
@@ -215,6 +215,9 @@ button {
 
 ::-webkit-scrollbar-track {
     background-color: black;
+}
+.modal {
+  opacity: 1;
 }
 
 .modal .content {
