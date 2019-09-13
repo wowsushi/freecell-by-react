@@ -20,7 +20,7 @@
 https://wowsushi.github.io/freecell-by-react/
 
 ## Demo
-[!demo](http://g.recordit.co/fExkJZtfLC.gif)
+![demo](http://g.recordit.co/fExkJZtfLC.gif)
 
 ## 如何使用?
 ```
