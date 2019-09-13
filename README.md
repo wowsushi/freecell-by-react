@@ -19,6 +19,9 @@
 ## 線上預覽
 https://wowsushi.github.io/freecell-by-react/
 
+## Demo
+[!demo](https://github.com/wowsushi/freecell-by-react/blob/master/public/demo/demo.mp4?raw=true)
+
 ## 如何使用?
 ```
 $ git clone

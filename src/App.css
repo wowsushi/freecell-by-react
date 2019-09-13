@@ -1,3 +1,4 @@
+/* font */
 @import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
 
 * {
@@ -42,8 +43,8 @@ button {
 }
 
 .container {
-  height: 100vh;
   width: 100%;
+  height: 100vh;
   padding: 0 7%;
 }
 
@@ -51,8 +52,8 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 11vh;
   width: 100%;
+  height: 11vh;
 }
 
 .header > div {
@@ -90,8 +91,8 @@ button {
     "main_left . main_right";
   grid-template-columns: 544px auto 544px;
   grid-template-rows: 145px auto;
-  margin-top: 1rem;
   height: 70vh;
+  margin-top: 1rem;
 }
 
 .cards_area {
@@ -102,8 +103,8 @@ button {
 
 .card_wrapper {
   position: relative;
-  height: 130px;
   width: 100px;
+  height: 130px;
   border: 2px hsla(0, 0%, 93%, 0.3) solid;
   border-radius: 10px;
 }
@@ -144,8 +145,8 @@ button {
 }
 
 .footer {
-  display: flex;
   position: fixed;
+  display: flex;
   justify-content: space-between;
   bottom: 0;
   left: 0;
@@ -161,8 +162,8 @@ button {
 
 .center_footer {
   position: absolute;
-  left: 38%;
   bottom: -45px;
+  left: 38%;
   width: 25%;
 }
 
@@ -180,7 +181,6 @@ button {
 .card_sorted {
   position: absolute;
   top: 0;
-  margin-top: 0;
 }
 
 .dragging {
@@ -200,21 +200,21 @@ button {
 ::-webkit-scrollbar,
 ::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-track {
-    width: 1rem;
-    border: none;
-    background:transparent;
+  width: 1rem;
+  border: none;
+  background: transparent;
 }
 
 
 ::-webkit-scrollbar-thumb {
-    background-color: #2F2417;
-    border: 4px black solid;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
+  border: 4px black solid;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  background-color: #2F2417;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: black;
+  background-color: black;
 }
 .modal {
   opacity: 1;
@@ -230,11 +230,11 @@ button {
   width: 52vw;
   height: 56vh;
   padding: 1rem 2rem;
-  background: #453122;
   border: 10px white solid;
   border-radius: 10px;
   outline: 4px #2F2417 solid;
   outline-offset: -10px;
+  background: #453122;
 }
 
 .modal .paragraph {
@@ -252,8 +252,8 @@ button {
   flex-flow: column nowrap;
   align-items: center;
   height: 80%;
-  overflow-y: hidden;
   margin: 1rem 0;
+  overflow-y: hidden;
 }
 
 .modal .paragraph_win {
@@ -262,10 +262,10 @@ button {
 
 .modal .paragraph_info button,
 .modal .paragraph_win button {
+  padding: 1rem 3rem;
   border: 3px #000000 solid;
   border-radius: 30px;
   background: #2F2417;
-  padding: 1rem 3rem;
 }
 
 .modal .paragraph_info button:hover,
