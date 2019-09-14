@@ -328,7 +328,6 @@ class App extends Component {
     this.closeModal()
     this.shuffleCards()
     this.setState({
-      // mainTableColumns: [[ [], [], [], [], [], [], [], [] ]],
       tempDecks: [[ [], [], [], [] ]],
       sortedDecks: [[ [], [], [], [] ]],
       score: 0,
@@ -359,10 +358,23 @@ class App extends Component {
         this.setState({modal: <InstructionModal />})
         break
       case 'info':
-        this.setState({modal: <InfoModal newGame={this.newGame} restart={this.restart} closeModal={this.closeModal} />})
+        this.setState({
+          modal:
+          <InfoModal
+            newGame={this.newGame}
+            restart={this.restart}
+            closeModal={this.closeModal}
+          />
+        })
         break
       case 'win':
-        this.setState({modal: <WinModal newGame={this.newGame} closeModal={this.closeModal} />})
+        this.setState({
+          modal:
+          <WinModal
+            newGame={this.newGame}
+            closeModal={this.closeModal}
+          />
+        })
         break
       default:
         console.log('error')
